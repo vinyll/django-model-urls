@@ -131,4 +131,4 @@ If you have any suggestion about it, feel free to fork or let me know.
 
 ### Further examples
 
-Refer to tests.py to see more usages
+Refer to [tests.py](https://github.com/vinyll/django-model-urls/blob/master/model_urls/tests.py) to see more usages
