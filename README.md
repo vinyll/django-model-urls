@@ -4,35 +4,57 @@ This app has a purpose of making urls usage DRYer.
 It allows to map a url to a model object instance by passing the object instance
 as argument to the url.
 
-### What's the problem ?
+## See in action
 
-Let's say we have an Article with these attributes: year, month, slug, and few others
+All examples will use these sample models:
 
-Let's say that we have in urls.py :
+    class Page(models.Model):
+        slug = models.SlugField()
+        category = models.ForeignKey('PageCategory')
+        title = models.CharField(max_length=50)
+
+And will attempt to generate this kind of url pattern :
+
+    /page/2012/11/how-to-optimize-django-urls/
+
+Therefore we'll have this in urls.py:
 
     urlpatterns = ('',
         …
-        url(r'^cours/(?P<year>\d{4})/(?P<month>[0-9]{2})/(?P<slug>[\w-]+)/$',
-            'article.views.details',
-            name='article_details'),
+        url(r'^page/(?P<year>\d{4})/(?P<month>[0-9]{2})/(?P<slug>[\w-]+)/$',
+            'page.views.display',
+            name='page_display'),
         )
 
-We might call it multiple times in various templates :
 
-    {% url article_details article.year article.month, article.slug %}
+#### Classical way django url
+
+##### in a views.py
+
+    …
+    page = Page.objects.get(id=1)
+    return HttpResponseRedirect(reverse('page_display', args={
+            'year': page.year,
+            'month': page.month,
+            'slug': page.slug,
+        }))
+
+###### in a template
+
+    {% url page_display page.year page.month, page.slug %}
 
 
-Someday, you need to add the "day" attribute to the Article and make it appear
-in the url.
-You also have to find each template where you were rendering this url.
-Failing here would occur 404 errors or even 500.
+#### Now using django-model-urls
 
+##### in a views.py
 
-### Solution: Model-urls to the rescue
+    …
+    page = Page.objects.get(id=1)
+    return HttpResponseRedirect(reverse('page_display', page))
 
-Model-urls will help you rendering a url this way :
+###### in a template
 
-    {% url 'article_details' article %}
+    {% url page_display page %}
 
 
 ## Installation
@@ -48,7 +70,7 @@ or add the line below to your pip requirements :
 
 ### Update your settings
 
-settings.py :
+settings.py:
 
     INSTALLED_APPS = (
         …,
@@ -56,97 +78,55 @@ settings.py :
         )
 
 
-## How it works
+## Usage
 
-1. Template calls "model_url" templatetag with view name and instance as arguments
-2. Templatetags looks for the view name inside model_urls (in urls.py)
-3. It translate the expression matching view name with the instance attributes.
+#### Defining model urls
 
-A model_urls is a tuple of tuple located in urls.py and called "model_urls".
-It has this structure :
+Model url are generated **from a different pattern than the urlpatterns**.
+Therefore you will need to **define the _model\_urls_** in urls.py:
 
+    …
     model_urls = (
-        (view_name, url_pattern, instance_attributes),
+        (url_name, url_pattern, instance_attribute_names),
         )
+
+_model_urls_ is a tuple of model_url tuple.
+A model url tuple has 3 parts:
+
+1. a string: the name of the model url
+2. a string: a pattern containing attributes name. ie: "/page/%(year)d/%(month)s/%(slug)s/"
+3. a tuple of strings: attributes to inject from instance into the pattern
+
+> you may access to values of a foreignkey from the instance.
+> To do so, use "__" (double underscores) in the pattern (just like for django orm)
+> and regular python "." for intance attribute names.
+> ex: ('page_display', '/page/%(category__type)s/%(slug)s/', ('category.type', 'slug'))
+
+#### In a template
+
+    {% load modelurl %}
+    <a href="{% model_url 'page_display' page %}">view in details</a>
+
+where _page_display_ is the model url key name and _page_ is the instance passed
+from the view.
+
+#### In a view
+
+    from model_url.urlresolver import reverse
+    …
+    page = Page.objects.get(id=1)
+    return HttpResponseRedirect(reverse('page_display', page))
+
 
 In the future, I wish to drop the model_urls completely from urls.py, but so far
 it must be used.
 
+## Notice
 
-## Usage examples
-
-### Preset
-
-In an existing project, you don't need these example presets, so you may skip
-to "Configuring urls"
-
-All example below will assume this model :
-
-    class Page(models.Model):
-        slug = models.SlugField()
-        category = models.ForeignKey('PageCategory')
-        title = models.CharField(max_length=50)
-
-    class PageCategory(models.Model):
-        name = models.CharField(max_length=50)
-        slug = models.CharField(max_length=50)
-
-
-And this sample data/fixture :
-
-PageCategory > name: "Computer", slug: "computer"
-Page > category: computer, title: "Django Cheatsheet", slug: "django-cheatsheet"
-
-and rendering via this templatetag, assuming a Page instance called "page" :
-
-    {% load url %}
-    <a href="{% model_url 'page_show' page %}">read further</a>
-
-
-### Configuring urls
-
-#### Render a url like "/page/django-cheatsheet/"
-
-urls.py:
-
-    urlpatterns = ('',
-        …
-        url(r'^page/(?P<slug>[\w-]+)/$', 'page.views.show', name='page_show'),
-        )
-    model_urls = (
-        ('page_show', (r'/page/%(slug)s/'), ('slug',))
-        )
-
-
-#### Render a url like "/page/django-cheatsheet/"
-
-urls.py:
-
-    urlpatterns = ('',
-        …
-        url(r'^page/(?P<slug>[\w-]+)/$', 'page.views.show', name='page_show'),
-        )
-    model_urls = (
-        ('page_show', (r'/page/%(slug)s/'), ('slug',))
-        )
-
-
-#### Render a url like "/page/computer/django-cheatsheet/"
-
-the model_urls is able to manage foreignkey attributes.
-The idea is that the pattern must use double underscores "__" (like in django orm
-foreignkey relation call) and instance parameters must use python style foreignkey
-attribute call.
-
-urls.py:
-
-    urlpatterns = ('',
-        …
-        url(r'^page/(?P<category>[\w-]+)/(?P<slug>[\w-]+)/$', 'page.views.show', name='page_show'),
-        )
-    model_urls = (
-        ('page_show', (r'/page/%(category__slug)s/%(slug)s/'), ('category.slug', 'slug'))
-        )
+model_urls in urls.py is a temporary way to generate a url.
+It is not as DRY as it could.
+In the future, I hope to be able to generate it directly from the native urlpatterns.
+If you have any suggestion about it, feel free to fork or let me know.
 
 
 ### Further examples

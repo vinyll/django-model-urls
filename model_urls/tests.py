@@ -1,5 +1,7 @@
 from django.test import TestCase
-from model_urls.templatetags.url import model_url
+
+from model_urls.urlresolvers import reverse
+from model_urls.templatetags.modelurl import model_url
 
 
 model_urls = (
@@ -13,12 +15,20 @@ class DummyModel(object):
         self.name = name
         self.ref = ref
 
-class UrlsTemplatetagTest(TestCase):
+urlconf = 'model_urls.tests'
+
+class UrlsReverseTest(TestCase):
     def setUp(self):
         self.instance = DummyModel(ref=DummyModel(ref=DummyModel('endpoint')))
-    def test_model_url_empty(self):
-        self.assertEqual(model_url('url1', self.instance, 'model_urls.tests'), r'/cours/')
-    def test_model_url_attr(self):
-        self.assertEqual(model_url('url2', self.instance, 'model_urls.tests'), r'/cours/dummy-model/')
-    def test_model_url_deep_attr(self):
-        self.assertEqual(model_url('url3', self.instance, 'model_urls.tests'), r'/cours/dummy-model/endpoint/')
+
+    def test_reverse_empty(self):
+        self.assertEqual(reverse('url1', self.instance, urlconf), r'/cours/')
+
+    def test_reverse_attr(self):
+        self.assertEqual(reverse('url2', self.instance, urlconf), r'/cours/dummy-model/')
+
+    def test_reverse_deep_attr(self):
+        self.assertEqual(reverse('url3', self.instance, urlconf), r'/cours/dummy-model/endpoint/')
+
+    def test_templatetag_model_url_deep_attr(self):
+        self.assertEqual(model_url('url3', self.instance, urlconf), r'/cours/dummy-model/endpoint/')

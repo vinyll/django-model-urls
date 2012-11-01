@@ -1,13 +1,11 @@
-from django.template import Library
 from django.core.urlresolvers import get_urlconf, get_resolver
 
 
-register = Library()
-
-@register.simple_tag
-def model_url(url_name, instance, urlconf=None):
-    model_urls = getattr(get_resolver(get_urlconf(urlconf)).urlconf_module, 'model_urls')
-    url_dict = dict(model_urls)[url_name]
+def reverse(urlname, instance, urlconf=None):
+    model_urls = getattr(
+        get_resolver(get_urlconf(urlconf)).urlconf_module,
+        'model_urls')
+    url_dict = dict(model_urls)[urlname]
     key_val = {}
     if not isinstance(url_dict, (tuple, list)):
         return url_dict
@@ -17,11 +15,11 @@ def model_url(url_name, instance, urlconf=None):
         except AttributeError, e:
             raise AttributeError(
                 'Error parsing model_url "%s" with instance "%s" : %s' %\
-                (url_name, instance, e.message))
+                (urlname, instance, e.message))
     try:
         uri = url_dict[0] % key_val
     except TypeError, e:
         raise AttributeError(
             'Error substituting values for model_url "%s" with instance "%s" : %s' %\
-            (url_name, instance, e.message))
+            (urlname, instance, e.message))
     return uri

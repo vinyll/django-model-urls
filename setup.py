@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='django_model_urls',
-    version='0.1',
+    version='0.2',
     description='DRY way to manage url parameters associated with a model instance.',
     long_description=open('README.md').read(),
     author='Vincent Agnano',
