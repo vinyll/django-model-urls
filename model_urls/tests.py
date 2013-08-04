@@ -39,13 +39,13 @@ urlconf = 'model_urls.tests'
 class ObjAttrTest(TestCase):
 
     def test_simple_obj_getattr(self):
-        self.assertEquals(obj_getattr(dummy_model, 'name'), "dummy-model")
+        self.assertEqual(obj_getattr(dummy_model, 'name'), "dummy-model")
 
     def test_level_obj_getattr(self):
-        self.assertEquals(obj_getattr(dummy_model, 'ref__name'), "level2")
+        self.assertEqual(obj_getattr(dummy_model, 'ref__name'), "level2")
 
     def test_deep_obj_getattr(self):
-        self.assertEquals(
+        self.assertEqual(
             obj_getattr(dummy_model, 'ref__ref__name'), "endpoint")
 
 
@@ -56,10 +56,10 @@ class UrlsReverseTest(TestCase):
             ref=DummyModel(name="level2", ref=DummyModel('endpoint')))
 
     def test_default_reverse(self):
-        self.assertEquals(reverse('basic_path', urlconf=urlconf), "/path/")
+        self.assertEqual(reverse('basic_path', urlconf=urlconf), "/path/")
 
     def test_instance_reverse(self):
-        self.assertEquals(
+        self.assertEqual(
             reverse('instance_path', dummy_model, urlconf=urlconf),
             "/path/dummy-model/")
 
