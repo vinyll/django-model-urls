@@ -4,6 +4,7 @@ This app has a purpose of making urls usage DRYer.
 It allows to map a URL to a model object instance by passing the object instance
 as argument to the URL.
 
+[![Build Status](https://travis-ci.org/vinyll/django-model-urls.png)](https://travis-ci.org/vinyll/django-model-urls)
 
 ## Installation
 
