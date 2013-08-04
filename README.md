@@ -10,18 +10,23 @@ as argument to the URL.
 
 Download via pip
 
-    pip install -e git+git://github.com/vinyll/django-model-urls.git#egg=django-model-urls
+```bash
+pip install -e git+git://github.com/vinyll/django-model-urls.git#egg=django-model-urls
+```
 
 or add the line below to your pip requirements :
 
-    -e git+git://github.com/vinyll/django-model-urls.git#egg=django-model-urls
-
+```bash
+-e git+git://github.com/vinyll/django-model-urls.git#egg=django-model-urls
+```
 
 Add _model_urls_ to your _settings_ file:
 
-    INSTALLED_APPS = (
-        'model_urls',
-    )
+```python
+INSTALLED_APPS = (
+    'model_urls',
+)
+```
 
 
 ## How to use it
@@ -31,29 +36,34 @@ Add _model_urls_ to your _settings_ file:
 
 Assuming you have this url:
 
-    urlpatterns = patterns('',
-        url(r'^page/(?<category__slug>.+)/(?<slug>.+)/$',
-            PageDetailView.as_view(),
-            name="page_detail"),
-        …
-    )
+```python
+urlpatterns = patterns('',
+    url(r'^page/(?<category__slug>.+)/(?<slug>.+)/$',
+        PageDetailView.as_view(),
+        name="page_detail"),
+    …
+)
+```
 
 this model:
 
-    class Page(models.Model):
-        slug = models.SlugField()
-        category = models.ForeignKey('PageCategory')
-        title = models.CharField(max_length=50)
+```python
+class Page(models.Model):
+    slug = models.SlugField()
+    category = models.ForeignKey('PageCategory')
+    title = models.CharField(max_length=50)
 
-    class PageCategory(models.Model):
-        name = models.CharField(max_length=50)
-        slug = models.SlugField()
-
+class PageCategory(models.Model):
+    name = models.CharField(max_length=50)
+    slug = models.SlugField()
+```
 
 This instance object:
 
-    django = PageCategory(slug="django-tips", name="Django tips and tricks")
-    Page.objects.create(category=django, slug="easy-urls-with-django")
+```python
+django = PageCategory(slug="django-tips", name="Django tips and tricks")
+Page.objects.create(category=django, slug="easy-urls-with-django")
+```
 
 Then, a call to `{% model_url "page_detail" page %}` would generate a url like
 `/page/django-tips/how-to-optimize-django-urls/`
@@ -61,19 +71,22 @@ Then, a call to `{% model_url "page_detail" page %}` would generate a url like
 
 #### In a template
 
-    {% load model_url %}
-    <a href="{% model_url 'page_detail' page %}">view in details</a>
+```html
+{% load model_url %}
+<a href="{% model_url 'page_detail' page %}">view in details</a>
+```
 
 where `page` is the model instance.
 
 
 #### In a view
 
-    from model_url.urlresolver import reverse
+```python
+from model_url.urlresolver import reverse
 
-    page = Page.objects.get(id=1)
-    return HttpResponseRedirect(reverse('page_detail', page))
-
+page = Page.objects.get(id=1)
+return HttpResponseRedirect(reverse('page_detail', page))
+```
 
 ### Further examples
 
