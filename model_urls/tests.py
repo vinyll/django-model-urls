@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.conf.urls import patterns, include, url
 
 from model_urls.urlresolvers import reverse, obj_getattr
-from model_urls.templatetags.modelurl import model_url
+from model_urls.templatetags.model_url import model_url
 
 
 class DummyModel(object):
