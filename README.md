@@ -76,5 +76,14 @@ where `page` is the model instance.
 
 ### Further examples
 
+#### Use cases
+
+A common use case is switching from pk based url to slug.
+Using django-model-urls means updating the _urls.py_ file to consider slug
+without altering views or template files.
+
+
+#### See tests
+
 Refer to [tests.py](https://github.com/vinyll/django-model-urls/blob/master/model_urls/tests.py)
 to see more usages.
