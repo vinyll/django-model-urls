@@ -1,26 +1,27 @@
 # Django Model URLs
 
+[![Build Status](https://travis-ci.org/vinyll/django-model-urls.png)](https://travis-ci.org/vinyll/django-model-urls)
+
 This app has a purpose of making urls usage DRYer.
 It allows to map a URL to a model object instance by passing the object instance
 as argument to the URL.
 
-[![Build Status](https://travis-ci.org/vinyll/django-model-urls.png)](https://travis-ci.org/vinyll/django-model-urls)
 
 ## Installation
 
-Download via pip
+Download via pip ![](https://pypip.in/v/django-model-urls/badge.png)
 
 ```bash
-pip install -e git+git://github.com/vinyll/django-model-urls.git#egg=django-model-urls
+pip install django-model-urls
 ```
 
-or add the line below to your pip requirements :
+or get the bleeding edge version
 
 ```bash
 -e git+git://github.com/vinyll/django-model-urls.git#egg=django-model-urls
 ```
 
-Add _model_urls_ to your _settings_ file:
+Add _model\_urls_ to your _settings_ file:
 
 ```python
 INSTALLED_APPS = (
