@@ -5,8 +5,8 @@ from setuptools import setup, find_packages
 
 setup(
     name='django-model-urls',
-    version='0.3.1',
-    description='DRY way to manage url parameters associated with a model instance.',
+    version='0.4.0',
+    description='DRY way to manage url parameters associated with a model instance based on Jingo.',
     long_description=open('README.md').read(),
     author='Vincent Agnano',
     author_email='vincent.agnano@scopyleft.fr',
@@ -21,8 +21,8 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.4',
         'Topic :: Utilities',
     ]
 )
